@@ -8,6 +8,7 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Camera2Forms.CustomViews;
 using Camera2Forms.Droid;
 using Java.Lang;
 using System;
@@ -72,6 +73,13 @@ namespace Camera2Forms.Camera2
         private ImageReader _imageReader;
         private string _cameraId;
 
+        private LensFacing lensFacing;
+
+        public void SetCameraOption(CameraOptions cameraOptions)
+        {
+            this.lensFacing = (cameraOptions == CameraOptions.Front) ? LensFacing.Front : LensFacing.Back;
+        }
+
         public CameraDroid(Context context) : base(context)
         {
             _context = context;
@@ -129,7 +137,7 @@ namespace Camera2Forms.Camera2
                 CameraCharacteristics chararc = _manager.GetCameraCharacteristics(cameraIds[i]);
 
                 var facing = (Integer)chararc.Get(CameraCharacteristics.LensFacing);
-                if (facing != null && facing == (Integer.ValueOf((int)LensFacing.Front)))
+                if (facing != null && facing == (Integer.ValueOf((int)lensFacing)))
                     continue;
 
                 _cameraId = cameraIds[i];

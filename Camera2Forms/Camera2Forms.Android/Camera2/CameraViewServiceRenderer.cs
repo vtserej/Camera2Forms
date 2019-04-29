@@ -33,6 +33,7 @@ namespace Camera2Forms.Camera2
 			{
                 e.NewElement.CameraClick = new Command(() => TakePicture());
                 _currentElement = e.NewElement;
+                _camera.SetCameraOption(_currentElement.Camera);
                 _camera.Photo += OnPhoto;
             }
 		}
