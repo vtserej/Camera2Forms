@@ -137,10 +137,16 @@ namespace Camera2Forms.Camera2
                 CameraCharacteristics chararc = _manager.GetCameraCharacteristics(cameraIds[i]);
 
                 var facing = (Integer)chararc.Get(CameraCharacteristics.LensFacing);
-                if (facing != null && facing == (Integer.ValueOf((int)lensFacing)))
-                    continue;
+                if (facing != null && facing == (Integer.ValueOf((int)LensFacing.Back)))
+                {
+                    _cameraId = cameraIds[i];
 
-                _cameraId = cameraIds[i];
+                    //Phones like Galaxy S10 have 2 or 3 frontal cameras usually the one with flash is the one
+                    //that should be chosen, if not It will select the first one and that can be the fish
+                    //eye camera
+                    if (HasFLash(chararc))
+                        break;
+                }
             }
 
             var characteristics = _manager.GetCameraCharacteristics(_cameraId);
@@ -165,19 +171,24 @@ namespace Camera2Forms.Camera2
                 Photo?.Invoke(this, buffer);
             };
 
-            var available = (Java.Lang.Boolean)characteristics.Get(CameraCharacteristics.FlashInfoAvailable);
-            if (available == null)
-            {
-                _flashSupported = false;
-            }
-            else
-            {
-                _flashSupported = (bool)available;
-            }
+            _flashSupported = HasFLash(characteristics);
 
             _imageReader.SetOnImageAvailableListener(readerListener, _backgroundHandler);
 
             _previewSize = GetOptimalSize(map.GetOutputSizes(Class.FromType(typeof(SurfaceTexture))), width, height);
+        }
+
+        private bool HasFLash(CameraCharacteristics characteristics)
+        {
+            var available = (Java.Lang.Boolean)characteristics.Get(CameraCharacteristics.FlashInfoAvailable);
+            if (available == null)
+            {
+                return false;
+            }
+            else
+            {
+                return (bool)available;
+            }
         }
 
         public void OpenCamera(int width, int height)
