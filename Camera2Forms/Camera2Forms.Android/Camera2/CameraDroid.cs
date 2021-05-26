@@ -137,7 +137,7 @@ namespace Camera2Forms.Camera2
                 CameraCharacteristics chararc = _manager.GetCameraCharacteristics(cameraIds[i]);
 
                 var facing = (Integer)chararc.Get(CameraCharacteristics.LensFacing);
-                if (facing != null && facing == (Integer.ValueOf((int)LensFacing.Back)))
+                if (facing != null && facing == Integer.ValueOf((int)lensFacing))
                 {
                     _cameraId = cameraIds[i];
 
@@ -220,12 +220,12 @@ namespace Camera2Forms.Camera2
             _previewSession.StopRepeating();
             _previewSession.Capture(_captureBuilder.Build(),
                 new CameraCaptureStillPictureSessionCallback
-            {
-                OnCaptureCompletedAction = session =>
                 {
-                    UnlockFocus();
-                }
-            }, null);
+                    OnCaptureCompletedAction = session =>
+                    {
+                        UnlockFocus();
+                    }
+                }, null);
         }
 
         public void StartPreview()
